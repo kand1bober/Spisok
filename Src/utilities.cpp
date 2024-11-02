@@ -1,4 +1,3 @@
-#include "../Headers/library.h"
 #include "../Headers/functions.h"
 #include "../Headers/decoration.h"
 
@@ -11,3 +10,12 @@ int CheckSize_t( size_t number )
         return -1;
 }
 
+char* GetFilePath( char* filepath )
+{
+    const char* directory = "/home/vyacheslav/Spisok/";
+    const char* filename = "graph.dot";
+    filepath = {};
+    sprintf(filepath, "%s%s", directory, filename);
+
+    return filepath;
+}

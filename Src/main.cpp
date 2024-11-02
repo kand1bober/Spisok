@@ -1,26 +1,37 @@
-#include "../Headers/library.h"
 #include "../Headers/functions.h"
 #include "../Headers/decoration.h"
 
 int main()
 {
-    struct List list = {};
+    
 
-    ListCtor( &list );
+    struct List spisok = {};
 
-    ListDump( &list );
+    ListCtor( &spisok );
+
+    ListDump( &spisok );
+
+    double to_insert = 52;
+
+    ListInsert( &spisok, 3, &to_insert);
+    // ListDelete( &spisok, 6 );
+
+    ListDump( &spisok );
+    
 
     //====== CHECK ===============
     ListElem a = 0;
     int b = 0;
     while(scanf("%d", &b))
     {
-        ListTake( &list, b, &a );
+        ListTake( &spisok, b, &a );
         printf(RED "ELEMENT: %lf\n" DELETE_COLOR, a);
     }
     //============================
 
-    ListDtor( &list );
+    ListDtor( &spisok );
+
+    // system( "dot -Tpng graph.dot -o huy.png" );
 
     return 0;
 }
