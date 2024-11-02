@@ -11,22 +11,29 @@ int main()
 
     ListDump( &spisok );
 
-    double to_insert = 52;
+    double to_insert = 17;
 
-    ListInsert( &spisok, 3, &to_insert);
-    // ListDelete( &spisok, 6 );
+    // ListInsert( &spisok, 3, &to_insert);
+    ListInsert( &spisok, 6, &to_insert);
+
+    ListDump( &spisok );
+
+    ListDelete( &spisok, 6 );
 
     ListDump( &spisok );
     
+    ListInsert( &spisok, 6, &to_insert);
+
+    ListDump( &spisok );
 
     //====== CHECK ===============
-    ListElem a = 0;
-    int b = 0;
-    while(scanf("%d", &b))
-    {
-        ListTake( &spisok, b, &a );
-        printf(RED "ELEMENT: %lf\n" DELETE_COLOR, a);
-    }
+    // ListElem a = 0;
+    // int b = 0;
+    // while(scanf("%d", &b))
+    // {
+    //     ListTake( &spisok, b, &a );
+    //     printf(RED "ELEMENT: %lf\n" DELETE_COLOR, a);
+    // }
     //============================
 
     ListDtor( &spisok );

@@ -52,13 +52,14 @@ struct List
 
 enum Errors ListCtor( struct List* list );
 enum Errors ListDtor( struct List* list );
-enum Errors ListTake( struct List* list, int number, ListElem* elem );
+enum Errors ListTake( struct List* list, size_t number, ListElem* elem );
 enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem );
 enum Errors ListDelete( struct List* list, size_t pivot );
 void ListDump( struct List* list );
 
 //============ UTILITIES ===========
 char* GetFilePath( char* filepath );
+int CheckSize_t( size_t number );
 //==================================
 
 

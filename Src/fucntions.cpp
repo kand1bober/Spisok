@@ -87,54 +87,69 @@ enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivo
     for(i = 1; i < pivot - 1; i++)
     {
         target = *(list->next + target);
-        printf(ORANGE "target: %lu\n" DELETE_COLOR, target);
+        // printf(ORANGE "target: %lu\n" DELETE_COLOR, target);
     }
 
     //=============меняем значение next предыдущего перед вставляемым и последнего 
     size_t pivot_target = *(list->next + target);
+
     //размер только рабочей области, поэтому везде вылазит (+1), а (++) это увеличение реального размера
     list->next_size++;                            
     *(list->next + target) = list->next_size + 1;
     *(list->next + list->next_size + 1) = pivot_target;
-    //===========================================
 
     return good_insert;
 }
 
 
-enum Errors ListDelete( struct List* list, int pivot )
+enum Errors ListDelete( struct List* list, size_t pivot )
 {
-    ON_DEBUG( *(list->array + pivot) = -*(list->array + pivot); ) //для заметности меняю на минус
-    ON_RELIZ( *(uint64_t*)(list->array + pivot) = POISON_VALUE; )
+    size_t target = 1;
 
-    *(list->next + pivot) = -1;
-    *(list->next + pivot - 1) = (pivot + 1); //предыдущий перед удаляемым указывает на следующий после удаллённого 
+    size_t i = 1;
+    for(i = 1; i < pivot - 1; i++)
+    {
+        target = *(list->next + target);
+        ON_DEBUG( printf(ORANGE "target: %lu\n" DELETE_COLOR, target); )
+    }
 
+    size_t pivot_target = *(list->next + target);
+    ON_DEBUG( printf(ORANGE "pivot_target: %lu\n" DELETE_COLOR, pivot_target); )
+    //============CHANGING some IP'S and one value==========
+    *(list->next + target) = *(list->next + pivot_target); // предыдущий указывает на следующий от меняемого
+    *(list->next + pivot_target) = -1;
+    ON_DEBUG( *(list->array + pivot_target) = -*(list->array + pivot_target); ) //для заметности меняю значение на минус
+    ON_RELIZ( *(uint64_t*)(list->array + pivot_target) = POISON_VALUE; ) 
 
-    return good_delete;
+    return good_delete;                            
 }
 
 
-enum Errors ListTake( struct List* list, int number, ListElem* elem )
+enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
 {
-    int target = 1;  //TODO: везде пересмотреть работу с size_t
-    for(int i = 1; (i < number) && (i < (int)list->next_size); i++) //смещение на 1 из-за фантомного элемента
+    if ( !CheckSize_t(number) )
     {
-        target = list->next[target];       
+        printf("bad number to take\n");
+        return bad_take;
     }
-    // printf("result: targ: %d\n", target);
-    // printf("%lf\n", list->array[target] );
-
-    if( list->array[target] != -1 )
+    else if ( number > list->next_size ) 
     {
-        *elem = list->array[target];
-        return good_take;
-    }
-    else 
-    {
-        *elem = -1;
         printf("Trying to access empty memory part\n");
         return bad_take;
     }
+    else 
+    {
+        // printf("size of working area of array: %lu\n", list->next_size);
 
+        size_t target = 1;  //TODO: везде пересмотреть работу с size_t
+        for(size_t i = 1; (i < number) && (i < list->next_size + 1); i++) //смещение на 1 из-за фантомного элемента
+        {
+            target = list->next[target];      
+            printf("target in taking: %lu\n", target); 
+        }
+
+        *elem = *(list->array + target);
+
+        return good_take;
+    }
 }
