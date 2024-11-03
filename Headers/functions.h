@@ -59,7 +59,7 @@ enum Errors ListDelete( struct List* list, size_t pivot );
 void ListDump( struct List* list );
 
 //============ UTILITIES ===========
-char* GetFilePath( char* filepath );
+char* GetFilePath( char* filepath, const char* filename );
 int CheckSize_t( size_t number );
 void BufferResize( struct Writing_buffer* buffer );
 //==================================

@@ -4,15 +4,28 @@
 
 void StartOutput( struct File_graph* file )
 {
-    char filepath[200] = {};
-    GetFilePath( filepath );
-    printf("Name of output file with code: %s\n", filepath); 
+    char code_filepath[200] = {};
+    char html_filepath[200] = {};
+    char image_filepath[200] = {};
+    GetFilePath( image_filepath, output_image_name );
+    GetFilePath( code_filepath, output_graph_name );
+    GetFilePath( html_filepath, output_html_name );
 
-    file->stream = fopen(filepath, "w");
+    printf("Name of output file with code: %s\n", code_filepath); 
+
+    //============================== GRAPH FILE ====================================
+    file->stream = fopen(code_filepath, "w");
     file->output_buffer.buffer = (char*)calloc( START_OUTPUT_FILE_SIZE, sizeof(char) );
-    fprintf(file->stream, "digraph G\n{\nrankdir=LR;\n"
-    "node[color=\"red\",fontsize=14];\n"
-    "edge[color=\"darkgreen\",fontcolor=\"blue\",fontsize=12];\n");
+    fprintf(file->stream, "digraph G\n{\nrankdir=LR;size=\"200,200\";bgcolor=\"#FFB6C1\";\n"
+    "node[color=\"#6666FF\",fontsize=14,shape=\"rectangle\",style=\"rounded,filled\",fillcolor=\"#FFFACD\"];\n"
+    "edge[color=\"#000080\",fontcolor=\"#000080\",fontsize=20];\n");
+    //==============================================================================
+    
+    //============================== HTML FIlE =====================================
+    FILE* html_stream = fopen( html_filepath, "w" );
+    fprintf(html_stream, "<img src=\"%s\"  alt=\"MyGraph\" width=\"1300px\" height=\"900px\">", image_filepath);
+    fclose( html_stream );
+    //==============================================================================
 }
 
 
@@ -20,14 +33,12 @@ void FinishOutput( struct File_graph* file )
 {
     fprintf(file->stream, "\n}\n");
     char cmd[256] = {};
-    snprintf(cmd, sizeof(cmd), "dot %s -Tpng -o %s", output_graph_name, output_image_name);
+    snprintf(cmd, sizeof(cmd), "dot -Tsvg %s > %s", output_graph_name, output_image_name);
     ON_DEBUG( printf(SINIY "command for graphviz: " YELLOW "%s\n" DELETE_COLOR, cmd); )
-
-    system( cmd );
-    // system( "dot MyGraph.dot -Tpng  -o KrutoyGraph2007.png" );
 
     fclose(file->stream);
     free(file->output_buffer.buffer);
+    system( cmd );
 }
 
 
@@ -61,9 +72,9 @@ enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
         printf(GREEN "success prev_target = %d, target = %d\n" DELETE_COLOR, prev_target, target);
 
         if(*(list->next + target) == -1)
-            fprintf(file->stream, "next_%d -> next_empty;\n", prev_target );
+            fprintf(file->stream, "next_%d -> next_empty [color = \"#800080\", arrowsize = 1];\n", prev_target );
         else
-            fprintf(file->stream, "next_%d -> next_%d;\n", prev_target,  target );
+            fprintf(file->stream, "next_%d -> next_%d [color = \"#800080\", arrowsize = 1];\n", prev_target,  target );
     }
 
     return good_write_bonds;

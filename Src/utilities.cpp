@@ -12,11 +12,10 @@ int CheckSize_t( size_t number )
         return -1;
 }
 
-char* GetFilePath( char* filepath )
+char* GetFilePath( char* filepath, const char* filename )
 {
     printf("getting filepath\n");
     const char* directory = "/home/vyacheslav/Spisok/";
-    const char* filename = output_graph_name;
     sprintf(filepath, "%s%s", directory, filename);
 
     return filepath;

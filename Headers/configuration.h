@@ -2,7 +2,8 @@
 #define CONFIGURATION_LIST_HEADER
 
 //=======NAME OF GRAPH FILE=====
-const char output_image_name[] = "KrutoyGraph2007.png";
+const char output_image_name[] = "KrutoyGraph2007.svg";
+const char output_html_name[] = "KrutoyGraph2007.html";
 const char output_graph_name[] = "MyGraph.dot";
 //===============================
 
