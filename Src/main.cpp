@@ -1,30 +1,31 @@
 #include "../Headers/functions.h"
-#include "../Headers/decoration.h"
+#include "../Headers/output.h"
 
 int main()
 {
-    
+
+
+    struct File_graph graph = {};
+    StartOutput( &graph );
 
     struct List spisok = {};
-
     ListCtor( &spisok );
 
-    ListDump( &spisok );
+    // ListDump( &spisok );
 
     double to_insert = 17;
-
     // ListInsert( &spisok, 3, &to_insert);
     ListInsert( &spisok, 6, &to_insert);
 
-    ListDump( &spisok );
+    // ListDump( &spisok );
 
-    ListDelete( &spisok, 6 );
+    // ListDelete( &spisok, 6 );
 
-    ListDump( &spisok );
+    // ListDump( &spisok );
     
-    ListInsert( &spisok, 6, &to_insert);
+    // ListInsert( &spisok, 6, &to_insert);
 
-    ListDump( &spisok );
+    // ListDump( &spisok );
 
     //====== CHECK ===============
     // ListElem a = 0;
@@ -36,9 +37,10 @@ int main()
     // }
     //============================
 
+    WriteAllBonds( &spisok, &graph);
+    FinishOutput( &graph );
+
     ListDtor( &spisok );
-
-    // system( "dot -Tpng graph.dot -o huy.png" );
-
+    
     return 0;
 }

@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 #include "macros.h"
+#include "decoration.h"
 
 #ifndef LIST_FUNCTIONS_HEADER
 #define LIST_FUNCTIONS_HEADER
@@ -60,6 +61,7 @@ void ListDump( struct List* list );
 //============ UTILITIES ===========
 char* GetFilePath( char* filepath );
 int CheckSize_t( size_t number );
+void BufferResize( struct Writing_buffer* buffer );
 //==================================
 
 

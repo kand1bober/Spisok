@@ -24,5 +24,5 @@ $(EXECUTABLE): $(OBJECTS)
 
 
 clean:
-	@rm  -rf $(SOURCES_PROC/*.o)  $(SOURCES_STACK/*.o)  $(EXECUTABLE) huy.png rm graph.dot
+	@rm  -rf $(SOURCES_PROC/*.o)  $(SOURCES_STACK/*.o)  $(EXECUTABLE) MyGraph.dot huy.png KrutoyGraph2007.png
 	

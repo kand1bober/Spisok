@@ -1,23 +1,29 @@
 #include "../Headers/functions.h"
+
 #ifndef LIST_OUTPUT_HEADER
 #define LIST_OUTPUT_HEADER
 
 
-struct Output_buffer
+const size_t START_OUTPUT_FILE_SIZE = 10;
+
+struct Writing_buffer
 {
-    size_t buffer_ip;
+    size_t ip;
     char* buffer;
-    int size;
-    int capacity;
+    size_t size;
+    size_t capacity;
 };
 
 struct File_graph
 {
     FILE* stream;
+    size_t stream_size;
 
-    size_t byte_size;
-    Output_buffer output_buffer;
+    Writing_buffer output_buffer;
 };
 
+void StartOutput( struct File_graph* file );
+void FinishOutput( struct File_graph* file );
+enum Errors WriteAllBonds( struct List* list, struct File_graph* file );
 
 #endif

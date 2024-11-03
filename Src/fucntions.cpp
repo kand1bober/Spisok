@@ -22,7 +22,7 @@ enum Errors ListCtor( struct List* list )
     {
         list->next[i] = -1;
     }
-//===================================================
+
 
 //===========заполнение массива индексов=================
     for(size_t i = 1; i < list->array_size; i++)
