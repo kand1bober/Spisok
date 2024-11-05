@@ -5,16 +5,19 @@ enum Errors ListCtor( struct List* list )
 {
     list->array = (ListElem*)calloc( START_LIST_SIZE + 1, sizeof(ListElem) );
 
+
     ListElem buffer[] = { 12, 78, 5, 32, 87, 19, 64, 4, 93, 25, 56 };
 
-//=========заполнение списка=======Тестовое========
+    //=========заполнение списка=======Тестовое========
     for(size_t i = 0; i < sizeof(buffer) / sizeof(ListElem); i++)
     {
         list->array[i + 1] = buffer[i];
         list->array_size++;
     }
-// printf("size of filled part: %lu\n", list->array_size);
-//size->array_size -- size of only filled part, without first null
+
+
+    // printf("size of filled part: %lu\n", list->array_size);
+    //size->array_size -- size of only filled part, without first null
 
     list->next = (int*)calloc(START_LIST_SIZE + 1, sizeof(int) );
 
@@ -24,15 +27,15 @@ enum Errors ListCtor( struct List* list )
     }
 
 
-//===========заполнение массива индексов=================
-    for(size_t i = 1; i < list->array_size; i++)
+    //===========заполнение массива индексов=================
+    for(size_t i = 0; i < list->array_size - 1; i++)
     {
         list->next[i] = i + 1;
         list->next_size++;
 
     }
     printf("size of filed part of array of indexes: %lu\n", list->next_size);
-//================================
+    //================================
 
     if( (list->next) && (list->array) )
         return good_ctor;
@@ -141,7 +144,7 @@ enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
     {
         // printf("size of working area of array: %lu\n", list->next_size);
 
-        size_t target = 1;  //TODO: везде пересмотреть работу с size_t
+        size_t target = 1; 
         for(size_t i = 1; (i < number) && (i < list->next_size + 1); i++) //смещение на 1 из-за фантомного элемента
         {
             target = list->next[target];      
@@ -153,3 +156,5 @@ enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
         return good_take;
     }
 }
+
+

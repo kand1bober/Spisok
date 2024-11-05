@@ -31,8 +31,7 @@ enum Errors
     good_write_bonds,
     bad_write_bonds,
 
-    good_open_file,
-    bad_open_file,
+    good_
 };
 
 struct List

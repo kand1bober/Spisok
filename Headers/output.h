@@ -5,6 +5,7 @@
 
 
 const size_t START_OUTPUT_FILE_SIZE = 10;
+const char output_color_1[20] = "#800080";
 
 struct Writing_buffer
 {

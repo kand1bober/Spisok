@@ -16,10 +16,11 @@ void StartOutput( struct File_graph* file )
     //============================== GRAPH FILE ====================================
     file->stream = fopen(code_filepath, "w");
     file->output_buffer.buffer = (char*)calloc( START_OUTPUT_FILE_SIZE, sizeof(char) );
-    fprintf(file->stream, "digraph G\n{\nrankdir=LR;size=\"200,200\";bgcolor=\"#FFB6C1\";\n"
-    "node[color=\"#6666FF\",fontsize=14,shape=\"rectangle\",style=\"rounded,filled\",fillcolor=\"#FFFACD\"];\n"
-    "edge[color=\"#000080\",fontcolor=\"#000080\",fontsize=20];\n");
+    fprintf(file->stream, "digraph G\n{\nrankdir=LR;size=\"200,300\";bgcolor=\"#FF69B4\";\n"
+    "edge[color=\"#000000\",fontcolor=\"#000000\",fontsize=10];\n");
     //==============================================================================
+
+
     
     //============================== HTML FIlE =====================================
     FILE* html_stream = fopen( html_filepath, "w" );
@@ -42,39 +43,29 @@ void FinishOutput( struct File_graph* file )
 }
 
 
-enum Errors WriteBonds( const char* line_a, const char* line_b, struct File_graph* file )
-{   
-    BufferResize( &file->output_buffer ); //resize if needed
-    //TODO: maybe parser of commands
-
-    size_t line_length = strlen( line_a );
-    snprintf(file->output_buffer.buffer + file->output_buffer.ip, line_length, "%s", line_a);
-    file->output_buffer.ip += line_length;
-
-    line_length = strlen( line_b );
-    snprintf(file->output_buffer.buffer + file->output_buffer.ip, line_length, "%s", line_b);
-    file->output_buffer.ip += line_length;
-
-    if( file->output_buffer.buffer )
-        return good_write_bonds;
-    else
-        return bad_write_bonds;
-}
 
 
 enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 {
-    int target = 1, prev_target = 1;
+    int target1 = 0, target2 = *(list->next + target1);
+    printf(GREEN "next_size: %lu\n" DELETE_COLOR, list->next_size );
     for(size_t i = 0; i < list->next_size - 1; i++)
     {
-        prev_target = target;
-        target = *(list->next + target);
-        printf(GREEN "success prev_target = %d, target = %d\n" DELETE_COLOR, prev_target, target);
+        printf(GREEN "i=%lu success target1 = %d, target2 = %d\n" DELETE_COLOR, i, target1, target2 );
 
-        if(*(list->next + target) == -1)
-            fprintf(file->stream, "next_%d -> next_empty [color = \"#800080\", arrowsize = 1];\n", prev_target );
+        
+        fprintf(file->stream, " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"#FFFACD\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ]; "
+                              " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"#FFFACD\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ];  ",
+                              target1, i, target1, target1, *(list->array + target1), target1, target2, 
+                              target2, i + 1, target2, target2, *(list->array + target2), target2, *(list->next + target2) );
+        
+        if( (target1 == -1) || (target2 == -1) )
+            fprintf(file->stream, "node_%d: <next%d> -> next_empty [color = \"%s\", arrowsize = 1] ;\n", target1, target2, output_color_1 );
         else
-            fprintf(file->stream, "next_%d -> next_%d [color = \"#800080\", arrowsize = 1];\n", prev_target,  target );
+            fprintf(file->stream, "node_%d: <next%d> -> node_%d: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", target1, target2,
+                                                                                                       target2, i + 1, output_color_1 );
+        target1 = *(list->next + target1);
+        target2 = *(list->next + target1);
     }
 
     return good_write_bonds;
