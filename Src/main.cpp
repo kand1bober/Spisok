@@ -11,7 +11,7 @@ int main()
     struct List spisok = {};
     ListCtor( &spisok );
 
-    // ListDump( &spisok );
+    ListDump( &spisok );
 
     // double to_insert = 17;
     // ListInsert( &spisok, 3, &to_insert);
@@ -19,9 +19,9 @@ int main()
 
     // ListDump( &spisok );
 
-    ListDelete( &spisok, 6 );
+    // ListDelete( &spisok, 6 );
 
-    ListDump( &spisok );
+    // ListDump( &spisok );
     
     // ListInsert( &spisok, 6, &to_insert);
 

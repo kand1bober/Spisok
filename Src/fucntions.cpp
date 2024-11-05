@@ -1,41 +1,72 @@
 #include "../Headers/functions.h"
 #include "../Headers/decoration.h"
+#include <mutex>
 
 enum Errors ListCtor( struct List* list )
 {
-    list->array = (ListElem*)calloc( START_LIST_SIZE + 1, sizeof(ListElem) );
+    list->array = (ListElem*)calloc( START_LIST_SIZE, sizeof(ListElem) );
+    list->array_capacity = START_LIST_SIZE - 1;
+    ListElem buffer[] = { 12, 65, 32, 17, 25, 1, 2, 3 };
+
+    list->next = (int*)calloc(START_LIST_SIZE, sizeof(int) );
+
+    list->prev = (int*)calloc(START_LIST_SIZE, sizeof(int) );
 
 
-    ListElem buffer[] = { 12, 78, 5, 32, 87, 19, 64, 4, 93, 25, 56 };
-
-    //=========заполнение списка=======Тестовое========
+    //=========заполнение списка=======Тестовое==================
+    for(size_t i = 0; i < list->array_capacity + 1; i++)
+    {
+        *(uint64_t*)(list->array + i) = POISON_VALUE;
+    }
     for(size_t i = 0; i < sizeof(buffer) / sizeof(ListElem); i++)
     {
         list->array[i + 1] = buffer[i];
         list->array_size++;
     }
+    //===========================================================
+
+
+    for(size_t i = 1; i < list->array_size + 1; i++)
+    {
+        list->next[i] = -1;
+        list->prev[i] = -1;
+    }
+
+    //===========заполнение массива индексов=================
+
+    ON_DEBUG( printf(YELLOW "Size of array: %lu\n\n" DELETE_COLOR, list->array_size); )
+
+    //=============NEXTS=======================
+    for(size_t i = 0; i < list->array_size; i++)
+    {
+        list->next[i] = i + 1;
+        list->next_size++;
+        ON_DEBUG( printf(RED "next[%lu]: %d\n" DELETE_COLOR, i, list->next[i]); )
+    }
+    *(list->next + list->array_size) = 0;
+    ON_DEBUG( printf(RED "next[%lu]: %d\n\n" DELETE_COLOR, list->array_size, list->next[list->array_size]); )
+
+    //===============PREVS=====================
+    *(list->prev) = list->array_size;
+    ON_DEBUG( printf(GREEN "prev[0]: %d\n" DELETE_COLOR, *(list->prev) ); )
+
+    for(size_t g = 1; g < list->array_size + 1; g++ )
+    {
+        *(list->prev + g) = g - 1;
+        ON_DEBUG( printf(GREEN "prev[%lu]: %d\n" DELETE_COLOR, g, *(list->prev + g) ); )
+    }
+    ON_DEBUG( printf("size of filed part of array of indexes: %lu\n", list->next_size); )
+    //=========================================
+
+
 
 
     // printf("size of filled part: %lu\n", list->array_size);
     //size->array_size -- size of only filled part, without first null
 
-    list->next = (int*)calloc(START_LIST_SIZE + 1, sizeof(int) );
-
-    for(size_t i = 1; i < START_LIST_SIZE; i++)
-    {
-        list->next[i] = -1;
-    }
 
 
-    //===========заполнение массива индексов=================
-    for(size_t i = 0; i < list->array_size - 1; i++)
-    {
-        list->next[i] = i + 1;
-        list->next_size++;
 
-    }
-    printf("size of filed part of array of indexes: %lu\n", list->next_size);
-    //================================
 
     if( (list->next) && (list->array) )
         return good_ctor;
@@ -48,6 +79,7 @@ enum Errors ListDtor( struct List* list )
 {
     free( list->next );
     free( list->array );
+    free( list->prev );
 
     if( (!list->next) && (!list->array) )
         return good_dtor;
@@ -57,22 +89,18 @@ enum Errors ListDtor( struct List* list )
 
 
 void ListDump( struct List* list )
-{
-    printf(GREEN "    Next Dump\n    " DELETE_COLOR);
-    for(int i = 0; i < START_LIST_SIZE + 1; i++)
+{   
+    printf(GREEN "[i]  Array Dump      Next    Prev     [i]\n" DELETE_COLOR);
+    for(size_t i = 0 ; i < START_LIST_SIZE; i++)
     {
-        for(int g = 0; g < 10; g++, i++)
+        if( *(uint64_t*)(list->array + i) == POISON_VALUE )
         {
-            printf("%d ", list->next[i] );
+            printf(ORANGE "[%02lu]" DELETE_COLOR "  " PURPLE "%7.2lf" DELETE_COLOR "   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
         }
-        printf("\n\n    ");
-    }
-    printf("\n");
-
-    printf(GREEN "     Array Dump       Next Dump    real numers\n" DELETE_COLOR);
-    for(int i = 0 ; i < START_LIST_SIZE + 1; i++)
-    {
-        printf(ORANGE "[%02d]" DELETE_COLOR "  %7.2lf     ----     %3d       " ORANGE "[%02d]" DELETE_COLOR "\n", i, list->array[i], list->next[i], i );
+        else
+        {
+            printf(ORANGE "[%02lu]" DELETE_COLOR "  %7.2lf   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
+        }
     }
     printf("\n\n");
 }   
@@ -157,4 +185,9 @@ enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
     }
 }
 
+
+// enum Errors()
+// {
+
+// }
 

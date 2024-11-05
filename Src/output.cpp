@@ -39,6 +39,7 @@ void FinishOutput( struct File_graph* file )
 
     fclose(file->stream);
     free(file->output_buffer.buffer);
+
     system( cmd );
 }
 
@@ -48,10 +49,10 @@ void FinishOutput( struct File_graph* file )
 enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 {
     int target1 = 0, target2 = *(list->next + target1);
-    printf(GREEN "next_size: %lu\n" DELETE_COLOR, list->next_size );
+    ON_DEBUG( printf(GREEN "next_size: %lu\n" DELETE_COLOR, list->next_size ); )
     for(size_t i = 0; i < list->next_size - 1; i++)
     {
-        printf(GREEN "i=%lu success target1 = %d, target2 = %d\n" DELETE_COLOR, i, target1, target2 );
+        ON_DEBUG( printf(GREEN "i=%lu success target1 = %d, target2 = %d\n" DELETE_COLOR, i, target1, target2 ); ) 
 
         
         fprintf(file->stream, " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"#FFFACD\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ]; "
