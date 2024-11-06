@@ -47,6 +47,9 @@ void FinishOutput( struct File_graph* file )
 
 enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 {
+    if( list->next_size < 2 )
+        return bad_write_bonds;
+
     //=== следущий от первого, следующий от второго===============входной расчёт=======+
     int target_next_1 = 0, target_next_2 = 0;
     int target_prev_1 = 0, target_prev_2 = 0;

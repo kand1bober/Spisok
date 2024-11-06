@@ -4,70 +4,41 @@
 enum Errors ListCtor( struct List* list )
 {
     list->array = (ListElem*)calloc( START_LIST_SIZE, sizeof(ListElem) );
-    list->array_capacity = START_LIST_SIZE - 1;
-    ListElem buffer[] = { 12, 65, 32, 17, 25, 1, 2, 3 };
-
     list->next = (int*)calloc(START_LIST_SIZE, sizeof(int) );
-
     list->prev = (int*)calloc(START_LIST_SIZE, sizeof(int) );
 
+    list->array_capacity = START_LIST_SIZE;
+    list->next_capacity = START_LIST_SIZE;
+    list->prev_capacity = START_LIST_SIZE;
 
-    //=========заполнение списка=======Тестовое==================
-    for(size_t i = 0; i < list->array_capacity + 1; i++)
-    {
-        *(uint64_t*)(list->array + i) = 0;
-    }
-    for(size_t i = 0; i < sizeof(buffer) / sizeof(ListElem); i++)
-    {
-        list->array[i + 1] = buffer[i];
-        list->array_size++;
-    }
-    //===========================================================
-
+    list->array_size = 0;
     list->next_size = list->array_size;
     list->prev_size = list->array_size;
     list->working_size = list->array_size;
 
-    for(size_t i = 1; i < list->array_size + 1; i++)
-    {
-        list->next[i] = -1;
-        list->prev[i] = -1;
-    }
-
     //===========заполнение массива индексов=================
 
-    ON_DEBUG( printf(YELLOW "Size of array: %lu\n\n" DELETE_COLOR, list->array_size); )
+    ON_DEBUG( printf(YELLOW "Size of:\narray: %lu\nofnext: %lu\nof prev: %lu\n\n" DELETE_COLOR, list->array_size, list->next_size, list->prev_size); )
 
     //=============NEXTS=======================
-    for(size_t i = 0; i < list->array_size; i++)
+    for(size_t i = 0; i < list->array_capacity; i++)
     {
         list->next[i] = i + 1;
         ON_DEBUG( printf(RED "next[%lu]: %d\n" DELETE_COLOR, i, list->next[i]); )
     }
-    *(list->next + list->array_size) = 0;
-    ON_DEBUG( printf(RED "next[%lu]: %d\n\n" DELETE_COLOR, list->array_size, list->next[list->array_size]); )
+    ON_DEBUG( printf(SINIY "next_capacity = %lu\n\n" DELETE_COLOR, list->next_capacity); )
 
     //===============PREVS=====================
-    *(list->prev) = list->array_size;
+    *(list->prev) = list->array_capacity - 1;
     ON_DEBUG( printf(GREEN "prev[0]: %d\n" DELETE_COLOR, *(list->prev) ); )
 
-    for(size_t g = 1; g < list->array_size + 1; g++ )
+    for(size_t g = 1; g < list->array_capacity; g++ )
     {
         *(list->prev + g) = g - 1;
         ON_DEBUG( printf(GREEN "prev[%lu]: %d\n" DELETE_COLOR, g, *(list->prev + g) ); )
     }
-    ON_DEBUG( printf("size of filed part of array of indexes: %lu\n", list->next_size); )
+    ON_DEBUG( printf(SINIY "prev_capacity: %lu\n\n" DELETE_COLOR, list->prev_capacity); )
     //=========================================
-
-
-
-
-    // printf("size of filled part: %lu\n", list->array_size);
-    //size->array_size -- size of only filled part, without first null
-
-
-
-
 
     if( (list->next) && (list->array) )
         return good_ctor;
@@ -91,31 +62,47 @@ enum Errors ListDtor( struct List* list )
 
 void ListDump( struct List* list )
 {   
-    printf(GREEN "[i]  Array Dump      Next    Prev     [i]\n" DELETE_COLOR);
-    for(size_t i = 0 ; i < START_LIST_SIZE; i++)
+    printf(GREEN "\n[i]  Array Dump      Next    Prev     [i]\n" DELETE_COLOR);
+    for(size_t i = 0 ; i < list->array_capacity; i++)
     {
         printf(ORANGE "[%02lu]" DELETE_COLOR "  %7.2lf   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
     }
     printf("\n\n");
 }   
 
+// enum Errors ListPush( struct List* list )
 
 //=====первая версия Insert=======
-enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivot -- номер элемента в который хочу вставить, то есть: вставляем в 3ий -- 2ой ссылается на номер после последнего он ссылаяется на , а 
+enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) 
 {
-    list->working_size++;
+    assert( list );
 
     ON_DEBUG( printf(GREEN "\n=== START OF INSERT ===\n" DELETE_COLOR); )
 
-    list->next_size++;  
-    list->prev_size++;
+    if( pivot > list->array_capacity )
+        return bad_insert;
 
-    list->array_size++;                                     //--|
-    *(ListElem*)(list->array + list->array_size ) = *elem;  //--|-- вставка реального числа в конец массива чисел
+    if( pivot < list->array_size )
+    {
+        *(ListElem*)(list->array + pivot ) = *elem; 
+        list->working_size++;
+        list->next_size++;  
+        list->prev_size++;
+        list->array_size++;   
+        return good_insert;
+    }
+    else 
+    {
+        *(ListElem*)(list->array + list->array_size ) = *elem;  
+        *(ListElem*)(list->array + pivot ) = *elem; 
+        list->working_size++;
+        list->next_size++;  
+        list->prev_size++;
+        list->array_size++;
+    }
 
     size_t next_target = 0, prev_target = 0;
 
-    // i --- //номер ячейки в next; target -- то, что лежит в ячейке, то есть номер "следующей" ячейки
     //===================NEXTS===================================
     for(size_t i = 0; i < pivot - 1; i++)
     {

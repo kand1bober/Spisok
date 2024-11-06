@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <assert.h>
 
 #include "macros.h"
 
@@ -10,7 +11,7 @@
 
 typedef double ListElem;
 
-const int START_LIST_SIZE = 20;
+const int START_LIST_SIZE = 10;
 
 const uint64_t POISON_VALUE = 0xBA5ED;
 
@@ -36,7 +37,8 @@ enum Errors
 struct List
 {
     size_t working_size;
-    
+    size_t free;
+
     ListElem* array;
     size_t array_size;
     size_t array_capacity;
