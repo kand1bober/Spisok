@@ -1,6 +1,5 @@
 #include "../Headers/functions.h"
 #include "../Headers/decoration.h"
-#include <mutex>
 
 enum Errors ListCtor( struct List* list )
 {
@@ -16,7 +15,7 @@ enum Errors ListCtor( struct List* list )
     //=========заполнение списка=======Тестовое==================
     for(size_t i = 0; i < list->array_capacity + 1; i++)
     {
-        *(uint64_t*)(list->array + i) = POISON_VALUE;
+        *(uint64_t*)(list->array + i) = 0;
     }
     for(size_t i = 0; i < sizeof(buffer) / sizeof(ListElem); i++)
     {
@@ -27,6 +26,7 @@ enum Errors ListCtor( struct List* list )
 
     list->next_size = list->array_size;
     list->prev_size = list->array_size;
+    list->working_size = list->array_size;
 
     for(size_t i = 1; i < list->array_size + 1; i++)
     {
@@ -94,14 +94,7 @@ void ListDump( struct List* list )
     printf(GREEN "[i]  Array Dump      Next    Prev     [i]\n" DELETE_COLOR);
     for(size_t i = 0 ; i < START_LIST_SIZE; i++)
     {
-        if( *(uint64_t*)(list->array + i) == POISON_VALUE )
-        {
-            printf(ORANGE "[%02lu]" DELETE_COLOR "  " PURPLE "%7.2lf" DELETE_COLOR "   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
-        }
-        else
-        {
-            printf(ORANGE "[%02lu]" DELETE_COLOR "  %7.2lf   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
-        }
+        printf(ORANGE "[%02lu]" DELETE_COLOR "  %7.2lf   ---  %3d    %3d      " ORANGE "[%02lu]" DELETE_COLOR "\n", i, list->array[i], list->next[i], list->prev[i], i );
     }
     printf("\n\n");
 }   
@@ -110,6 +103,8 @@ void ListDump( struct List* list )
 //=====первая версия Insert=======
 enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivot -- номер элемента в который хочу вставить, то есть: вставляем в 3ий -- 2ой ссылается на номер после последнего он ссылаяется на , а 
 {
+    list->working_size++;
+
     ON_DEBUG( printf(GREEN "\n=== START OF INSERT ===\n" DELETE_COLOR); )
 
     list->next_size++;  
@@ -137,7 +132,7 @@ enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivo
     //============================================================
 
     //==================PREVS=====================================
-    for(size_t i = 0; i < (list->prev_size - pivot ); i++)
+    for(size_t i = 0; i < (list->working_size - pivot ); i++)
     {
         prev_target = *(list->prev + prev_target);
         ON_DEBUG( printf(SINIY "prev_target: %lu\n" DELETE_COLOR, prev_target); )
@@ -181,7 +176,7 @@ enum Errors ListDelete( struct List* list, size_t pivot )
 
     //========================== PREV ================================
     size_t prev_target = 0;
-    for(size_t i = 0; i < (list->prev_size - pivot ); i++)
+    for(size_t i = 0; i < (list->working_size - pivot ); i++)
     {
         prev_target = *(list->prev + prev_target);
         ON_DEBUG( printf(SINIY "prev_target: %lu\n" DELETE_COLOR, prev_target); )
@@ -192,6 +187,8 @@ enum Errors ListDelete( struct List* list, size_t pivot )
 
     *(list->prev + prev_target) = *(list->prev + pivot_prev_target);  
     *(list->prev + pivot_prev_target) = -1;
+
+    list->working_size--;
     //================================================================
 
     ON_DEBUG( printf(GREEN "=== END OF DELETE ===\n" DELETE_COLOR); )
@@ -245,7 +242,7 @@ enum Errors ListTakeTale( struct List* list, size_t number, ListElem* elem )
     else 
     {
         size_t target = 0; 
-        for(size_t i = 0; (i < (list->prev_size - number + 1 ) ) && (i < list->prev_size + 1); i++) //смещение на 1 из-за фантомного элемента
+        for(size_t i = 0; (i < (list->working_size - number + 1 ) ) && (i < list->prev_size + 1); i++) //смещение на 1 из-за фантомного элемента
         {
             target = list->prev[ target ];      
             printf(SINIY "target in taking: %lu\n" DELETE_COLOR, target); 

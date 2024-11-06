@@ -1,5 +1,6 @@
-#include "../Headers/functions.h"
+// #include "../Headers/functions.h"
 #include "../Headers/output.h"
+#include "../Headers/decoration.h"
 
 
 void StartOutput( struct File_graph* file )
@@ -46,28 +47,116 @@ void FinishOutput( struct File_graph* file )
 
 enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 {
-    int prev1 = 0, prev2 = 0;
-    int target1 = 0, target2 = *(list->next + target1);
-    ON_DEBUG( printf(GREEN "next_size: %lu\n" DELETE_COLOR, list->next_size ); )
-    for(size_t i = 0; i < list->next_size ; i++)
+    //=== следущий от первого, следующий от второго===============входной расчёт=======+
+    int target_next_1 = 0, target_next_2 = 0;
+    int target_prev_1 = 0, target_prev_2 = 0;
+    ListElem elem1 = 0, elem2 = 0;
+    //=======================================
+
+    ON_DEBUG( printf(GREEN "next_size: %lu\n\n" DELETE_COLOR, list->next_size ); )
+    for(size_t i = 0; i < list->next_size; i++)
     {
-        ON_DEBUG( printf(GREEN "i=%lu success target1 = %d, target2 = %d\n" DELETE_COLOR, i, target1, target2 ); ) 
+        elem1 = *(list->array + i);
+        elem2 = *(list->array + i + 1);
+
+        target_next_1 = *(list->next + i);
+        target_next_2 = *(list->next + i + 1);
+
+        target_prev_1 = *(list->prev + i);
+        target_prev_2 = *(list->prev + i + 1);
+
+
+        printf(YELLOW "%4.0lf %4.0lf  i=%lu\n\n", elem1, elem2, i);
+
+        printf(YELLOW "%4d%4d\n%4d%4d\n\n\n" DELETE_COLOR, target_next_1, target_prev_1, target_next_2, target_prev_2);
+
+
+        fprintf(file->stream, " node_%lu [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"%s\",label=\" { <ip%lu> i: %lu } | { <data%lu> data: %0.2lf} | { <next%d> next: %d } | { <prev%lu> prev: %d } \" ]; "
+                              " node_%lu [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"%s\",label=\" { <ip%lu> i: %lu } | { <data%lu> data: %0.2lf} | { <next%d> next: %d } | { <prev%lu> prev: %d } \" ];  ",
+                                i, fillcolor, default_pointer_color, i, i, i, elem1, target_next_1, target_next_1, i, target_prev_1,
+                                i+1, fillcolor, default_pointer_color, i+1, i+1, i+1, elem2, target_next_2, target_next_2, i+1, target_prev_2 );
+        
+
+        fprintf(file->stream, "node_%lu -> node_%lu [color = \"%s\", arrowsize = 1] ;\n", i, i+1, default_pointer_color );
 
         
-        fprintf(file->stream, " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ]; "
-                              " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ];  ",
-                              target1, fillcolor, i, target1, target1, *(list->array + target1), target1, target2, 
-                              target2, fillcolor, i + 1, target2, target2, *(list->array + target2), target2, *(list->next + target2) );
-        
-        if( (target1 == -1) || (target2 == -1) )
-            fprintf(file->stream, "node_%d: <next%d> -> next_empty [color = \"%s\", arrowsize = 1] ;\n", target1, target2, output_color_1 );
-        else
-            fprintf(file->stream, "node_%d: <next%d> -> node_%d: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", target1, target2,
-                                                                                                       target2, i + 1, output_color_1 );
-        target1 = *(list->next + target1);
-        target2 = *(list->next + target1);
+        // if( (size_t)target_next_1 == (i + 1) )
+        // {
+        //     fprintf(file->stream, "node_%lu: <next%d> -> node_%lu: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", i, target_next_1, i+1, i+1, next_pointer_color);
+        //     printf("HUUUUUUUUUY\n");
+        // }
+
+        // fprintf(file->stream, "node_%lu: <next%d> -> node_%lu: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", i, target_next_1, i+1, i+1, next_pointer_color);
+
+        // fprintf(file->stream, "node_%lu: <prev%d> -> node_%lu: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", i, target_next_1, i+1, i+1, next_pointer_color);
     }
+    // fprintf(file->stream, "node_5: <next9> -> node_9: <ip9> [color = \"%s\", arrowsize = 1] ;\n", next_pointer_color);
 
     return good_write_bonds;
 }
 
+
+
+
+
+// enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
+// {
+//     //=== следущий от первого, следующий от второго===============входной расчёт=======+
+//     int target_next_1 = 0, target_next_2 = 0;
+//     int target_prev_1 = 0, target_prev_2 = 0;
+//     ListElem elem1 = 0, elem2 = 0;
+//     //=======================================
+
+//     ON_DEBUG( printf(GREEN "next_size: %lu\n\n" DELETE_COLOR, list->next_size ); )
+//     for(size_t i = 0; i < list->next_size; i++)
+//     {
+//         elem1 = *(list->array + i);
+//         elem2 = *(list->array + i + 1);
+
+//         target_next_1 = *(list->next + i);
+//         target_next_2 = *(list->next + i + 1);
+
+//         target_prev_1 = *(list->prev + i);
+//         target_prev_2 = *(list->prev + i + 1);
+
+
+//         printf(YELLOW "%4.0lf %4.0lf  i=%lu\n\n", elem1, elem2, i);
+
+//         printf(YELLOW "%4d%4d\n%4d%4d\n\n\n" DELETE_COLOR, target_next_1, target_prev_1, target_next_2, target_prev_2);
+
+    
+
+//         // ON_DEBUG( printf(GREEN "i=%lu next1 = %d, next2 = %d\n\n" DELETE_COLOR, i, target_next_1, target_next_2 ); ) 
+
+//         fprintf(file->stream, " node_%lu [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"%s\",label=\" { <ip%lu> i: %lu } | { <data%lu> data: %0.2lf} | { <next%d> next: %d } | { <prev%lu> prev: %d } \" ]; "
+//                               " node_%lu [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"%s\",label=\" { <ip%lu> i: %lu } | { <data%lu> data: %0.2lf} | { <next%d> next: %d } | { <prev%lu> prev: %d } \" ];  ",
+//                                 i, fillcolor, default_pointer_color, i, i, i, elem1, target_next_1, target_next_1, i, target_prev_1,
+//                                 i+1, fillcolor, default_pointer_color, i+1, i+1, i+1, elem2, target_next_2, target_next_2, i+1, target_prev_2 );
+        
+
+//         fprintf(file->stream, "node_%lu -> node_%lu [color = \"%s\", arrowsize = 1] ;\n", i, i+1, default_pointer_color );
+
+//         // fprintf(file->stream, "node_%lu: <next%d> -> node_%lu: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", i, target_next_1, i+1, i+1, next_pointer_color);
+
+
+//         for(size_t a = 0; a < list->next_size; a++)
+//         {
+//             for(size_t j = 0; j < list->next_size; j++)
+//             {
+//                 if( ( (size_t)(*(list->next + a) ) == j) && ( a =! j ) )
+//                 {
+//                     fprintf(file->stream, "node_%lu: <next%d> -> node_%lu: <ip%lu> [color = \"%s\", arrowsize = 1] ;\n", a, *(list->next + a), j, j, next_pointer_color);
+//                     printf("HUUUUUUUUUY\n");
+//                 }
+//                 else 
+//                 {
+//                     continue;
+//                 }
+//             }
+//         }
+
+
+//     }
+
+//     return good_write_bonds;
+// }

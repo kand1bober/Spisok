@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 #include "macros.h"
-#include "decoration.h"
 
 #ifndef LIST_FUNCTIONS_HEADER
 #define LIST_FUNCTIONS_HEADER
@@ -36,6 +35,8 @@ enum Errors
 
 struct List
 {
+    size_t working_size;
+    
     ListElem* array;
     size_t array_size;
     size_t array_capacity;

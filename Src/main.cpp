@@ -17,11 +17,11 @@ int main()
 
     // ListDump( &spisok );
 
-    // ListDelete( &spisok, 6 );
+    ListDelete( &spisok, 3 );
 
     // ListDump( &spisok );
     
-    ListInsert( &spisok, 6, &to_insert);
+    ListInsert( &spisok, 3, &to_insert);
 
     ListDump( &spisok );
 

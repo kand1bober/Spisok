@@ -5,9 +5,12 @@
 
 
 const size_t START_OUTPUT_FILE_SIZE = 10;
-const char output_color_1[20] = "#800080";
+const char default_pointer_color[20] = "#0000CD";
+const char next_pointer_color[20] = "#FF0000";
+const char prev_pointer_color[20] = "#00FF00";
+
 const char fillcolor[20] = "#FFFACD";
-const char bgcolor[20] = "#FF69B4";
+const char bgcolor[20] = "#FFD7DC";
 
 struct Writing_buffer
 {
