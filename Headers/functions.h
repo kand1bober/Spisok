@@ -52,7 +52,8 @@ struct List
 
 enum Errors ListCtor( struct List* list );
 enum Errors ListDtor( struct List* list );
-enum Errors ListTake( struct List* list, size_t number, ListElem* elem );
+enum Errors ListTakeHead( struct List* list, size_t number, ListElem* elem );
+enum Errors ListTakeTale( struct List* list, size_t number, ListElem* elem );
 enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem );
 enum Errors ListDelete( struct List* list, size_t pivot );
 void ListDump( struct List* list );

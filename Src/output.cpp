@@ -16,8 +16,8 @@ void StartOutput( struct File_graph* file )
     //============================== GRAPH FILE ====================================
     file->stream = fopen(code_filepath, "w");
     file->output_buffer.buffer = (char*)calloc( START_OUTPUT_FILE_SIZE, sizeof(char) );
-    fprintf(file->stream, "digraph G\n{\nrankdir=LR;size=\"200,300\";bgcolor=\"#FF69B4\";\n"
-    "edge[color=\"#000000\",fontcolor=\"#000000\",fontsize=10];\n");
+    fprintf(file->stream, "digraph G\n{\nrankdir=LR;size=\"200,300\";bgcolor=\"%s\";\n"
+    "edge[color=\"#000000\",fontcolor=\"#000000\",fontsize=10];\n", bgcolor);
     //==============================================================================
 
 
@@ -44,21 +44,20 @@ void FinishOutput( struct File_graph* file )
 }
 
 
-
-
 enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 {
+    int prev1 = 0, prev2 = 0;
     int target1 = 0, target2 = *(list->next + target1);
     ON_DEBUG( printf(GREEN "next_size: %lu\n" DELETE_COLOR, list->next_size ); )
-    for(size_t i = 0; i < list->next_size - 1; i++)
+    for(size_t i = 0; i < list->next_size ; i++)
     {
         ON_DEBUG( printf(GREEN "i=%lu success target1 = %d, target2 = %d\n" DELETE_COLOR, i, target1, target2 ); ) 
 
         
-        fprintf(file->stream, " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"#FFFACD\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ]; "
-                              " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"#FFFACD\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ];  ",
-                              target1, i, target1, target1, *(list->array + target1), target1, target2, 
-                              target2, i + 1, target2, target2, *(list->array + target2), target2, *(list->next + target2) );
+        fprintf(file->stream, " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ]; "
+                              " node_%d [shape=record,style=\"rounded,filled\",fillcolor=\"%s\",color=\"#6666FF\",label=\" { <ip%lu> ip: %d } | { <data%d> data: %0.2lf} | { <next%d> next: %d } | { <prev> prev: } \" ];  ",
+                              target1, fillcolor, i, target1, target1, *(list->array + target1), target1, target2, 
+                              target2, fillcolor, i + 1, target2, target2, *(list->array + target2), target2, *(list->next + target2) );
         
         if( (target1 == -1) || (target2 == -1) )
             fprintf(file->stream, "node_%d: <next%d> -> next_empty [color = \"%s\", arrowsize = 1] ;\n", target1, target2, output_color_1 );
@@ -71,3 +70,4 @@ enum Errors WriteAllBonds( struct List* list, struct File_graph* file )
 
     return good_write_bonds;
 }
+

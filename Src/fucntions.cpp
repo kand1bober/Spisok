@@ -25,6 +25,8 @@ enum Errors ListCtor( struct List* list )
     }
     //===========================================================
 
+    list->next_size = list->array_size;
+    list->prev_size = list->array_size;
 
     for(size_t i = 1; i < list->array_size + 1; i++)
     {
@@ -40,7 +42,6 @@ enum Errors ListCtor( struct List* list )
     for(size_t i = 0; i < list->array_size; i++)
     {
         list->next[i] = i + 1;
-        list->next_size++;
         ON_DEBUG( printf(RED "next[%lu]: %d\n" DELETE_COLOR, i, list->next[i]); )
     }
     *(list->next + list->array_size) = 0;
@@ -109,25 +110,48 @@ void ListDump( struct List* list )
 //=====первая версия Insert=======
 enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivot -- номер элемента в который хочу вставить, то есть: вставляем в 3ий -- 2ой ссылается на номер после последнего он ссылаяется на , а 
 {
+    ON_DEBUG( printf(GREEN "\n=== START OF INSERT ===\n" DELETE_COLOR); )
+
+    list->next_size++;  
+    list->prev_size++;
+
     list->array_size++;                                     //--|
     *(ListElem*)(list->array + list->array_size ) = *elem;  //--|-- вставка реального числа в конец массива чисел
 
-    size_t target = 1;
+    size_t next_target = 0, prev_target = 0;
 
-    size_t i = 1; //номер ячейки в next; target -- то, что лежит в ячейке, то есть номер "следующей" ячейки
-    for(i = 1; i < pivot - 1; i++)
+    // i --- //номер ячейки в next; target -- то, что лежит в ячейке, то есть номер "следующей" ячейки
+    //===================NEXTS===================================
+    for(size_t i = 0; i < pivot - 1; i++)
     {
-        target = *(list->next + target);
-        // printf(ORANGE "target: %lu\n" DELETE_COLOR, target);
+        next_target = *(list->next + next_target);
+        ON_DEBUG( printf(SINIY "next_target: %lu\n" DELETE_COLOR, next_target); )
     }
-
-    //=============меняем значение next предыдущего перед вставляемым и последнего 
-    size_t pivot_target = *(list->next + target);
+    //=============меняем значение next предыдущего перед вставляемым и последнего  
+    size_t pivot_next_target = *(list->next + next_target);
+    ON_DEBUG( printf(RED "pivot_next_target: %lu\n" DELETE_COLOR, pivot_next_target); )
 
     //размер только рабочей области, поэтому везде вылазит (+1), а (++) это увеличение реального размера
-    list->next_size++;                            
-    *(list->next + target) = list->next_size + 1;
-    *(list->next + list->next_size + 1) = pivot_target;
+    *(list->next + next_target) = list->next_size;
+    *(list->next + list->next_size) = pivot_next_target;
+    //============================================================
+
+    //==================PREVS=====================================
+    for(size_t i = 0; i < (list->prev_size - pivot ); i++)
+    {
+        prev_target = *(list->prev + prev_target);
+        ON_DEBUG( printf(SINIY "prev_target: %lu\n" DELETE_COLOR, prev_target); )
+    }
+
+    size_t pivot_prev_target = prev_target;
+    prev_target = *(list->prev + pivot_prev_target);
+    ON_DEBUG( printf(RED "pivot_prev_tatrget: %lu\n" DELETE_COLOR, pivot_prev_target); )
+
+    *(list->prev + pivot_prev_target) = list->prev_size;  
+    *(list->prev + list->prev_size) = prev_target;
+    //============================================================
+
+    ON_DEBUG( printf(GREEN "=== END OF INSERT ===\n" DELETE_COLOR); )
 
     return good_insert;
 }
@@ -135,28 +159,48 @@ enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem) // pivo
 
 enum Errors ListDelete( struct List* list, size_t pivot )
 {
-    size_t target = 1;
+    ON_DEBUG( printf(GREEN "=== START OF DELETE ===\n" DELETE_COLOR); )
+    //TODO: добавить умешьшение размера, free elements, чтобы добавлять не только тупо в конец
 
-    size_t i = 1;
-    for(i = 1; i < pivot - 1; i++)
+    //========================= NEXTS ================================
+    size_t next_target = 0;
+    for(size_t i = 0; i < pivot - 1; i++)
     {
-        target = *(list->next + target);
-        ON_DEBUG( printf(ORANGE "target: %lu\n" DELETE_COLOR, target); )
+        next_target = *(list->next + next_target);
+        ON_DEBUG( printf(SINIY "next_target: %lu\n" DELETE_COLOR, next_target); )
     }
 
-    size_t pivot_target = *(list->next + target);
-    ON_DEBUG( printf(ORANGE "pivot_target: %lu\n" DELETE_COLOR, pivot_target); )
-    //============CHANGING some IP'S and one value==========
-    *(list->next + target) = *(list->next + pivot_target); // предыдущий указывает на следующий от меняемого
-    *(list->next + pivot_target) = -1;
-    ON_DEBUG( *(list->array + pivot_target) = -*(list->array + pivot_target); ) //для заметности меняю значение на минус
-    ON_RELIZ( *(uint64_t*)(list->array + pivot_target) = POISON_VALUE; ) 
+    size_t pivot_next_target = *(list->next + next_target);
+    ON_DEBUG( printf(RED "pivot_next_target: %lu\n" DELETE_COLOR, pivot_next_target); )
+
+    *(list->next + next_target) = *(list->next + pivot_next_target); // предыдущий указывает на следующий от меняемого
+    *(list->next + pivot_next_target) = -1;
+    ON_DEBUG( *(list->array + pivot_next_target) = -*(list->array + pivot_next_target); ) //для заметности меняю значение на минус
+    ON_RELIZ( *(uint64_t*)(list->array + pivot_next_target) = POISON_VALUE; ) 
+    //================================================================
+
+    //========================== PREV ================================
+    size_t prev_target = 0;
+    for(size_t i = 0; i < (list->prev_size - pivot ); i++)
+    {
+        prev_target = *(list->prev + prev_target);
+        ON_DEBUG( printf(SINIY "prev_target: %lu\n" DELETE_COLOR, prev_target); )
+    }
+
+    size_t pivot_prev_target = *(list->prev + prev_target); 
+    ON_DEBUG( printf(RED "pivot_prev_tatrget: %lu\n" DELETE_COLOR, pivot_prev_target); )
+
+    *(list->prev + prev_target) = *(list->prev + pivot_prev_target);  
+    *(list->prev + pivot_prev_target) = -1;
+    //================================================================
+
+    ON_DEBUG( printf(GREEN "=== END OF DELETE ===\n" DELETE_COLOR); )
 
     return good_delete;                            
 }
 
 
-enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
+enum Errors ListTakeHead( struct List* list, size_t number, ListElem* elem )
 {
     if ( !CheckSize_t(number) )
     {
@@ -172,11 +216,11 @@ enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
     {
         // printf("size of working area of array: %lu\n", list->next_size);
 
-        size_t target = 1; 
-        for(size_t i = 1; (i < number) && (i < list->next_size + 1); i++) //смещение на 1 из-за фантомного элемента
+        size_t target = 0; 
+        for(size_t i = 0; (i < number) && (i < list->next_size ); i++) //смещение на 1 из-за фантомного элемента
         {
             target = list->next[target];      
-            printf("target in taking: %lu\n", target); 
+            printf(SINIY "target in taking: %lu\n" DELETE_COLOR, target); 
         }
 
         *elem = *(list->array + target);
@@ -186,8 +230,31 @@ enum Errors ListTake( struct List* list, size_t number, ListElem* elem )
 }
 
 
-// enum Errors()
-// {
+enum Errors ListTakeTale( struct List* list, size_t number, ListElem* elem )
+{
+    if ( !CheckSize_t(number) )
+    {
+        printf("bad number to take\n");
+        return bad_take;
+    }
+    else if ( number > list->next_size ) 
+    {
+        printf("Trying to access empty memory part\n");
+        return bad_take;
+    }
+    else 
+    {
+        size_t target = 0; 
+        for(size_t i = 0; (i < (list->prev_size - number + 1 ) ) && (i < list->prev_size + 1); i++) //смещение на 1 из-за фантомного элемента
+        {
+            target = list->prev[ target ];      
+            printf(SINIY "target in taking: %lu\n" DELETE_COLOR, target); 
+        }
 
-// }
+        *elem = *(list->array + target);
+
+    }
+
+    return good_take;
+}
 
