@@ -8,18 +8,31 @@ int main()
     struct File_graph graph = {};
     StartOutput( &graph );
 
-    struct List spisok = {};
-    ListCtor( &spisok );
-    ListDump( &spisok );
+    struct Data chain = {};
+    ListCtor( &chain );
+    ListDump( &chain.spisok, &chain.free );
 
-    ListElem to_insert = 1.11;
-    ListInsert( &spisok, 9, &to_insert );
-    ListInsert( &spisok, 8, &to_insert );
-    ListInsert( &spisok, 7, &to_insert );
-    ListInsert( &spisok, 6, &to_insert );
-    ListDump( &spisok );
+    PAUSE
+    ListElem to_insert_1 = 1.11;
+    ListElem to_insert_2 = 1.22;
+    ListElem to_insert_3 = 1.33;
+    ListElem to_insert_4 = 1.44;
+    ListElem to_insert_5 = 1.55;
+    ListInsert( &chain.spisok, &chain.free, 1, &to_insert_1 );
+    PAUSE
+    ListInsert( &chain.spisok, &chain.free, 2, &to_insert_2 );
+    PAUSE
+    ListInsert( &chain.spisok, &chain.free, 3, &to_insert_3 );
+    PAUSE
+    ListInsert( &chain.spisok, &chain.free, 4, &to_insert_4 );
+    PAUSE
+
+    ListDelete( &chain.spisok, &chain.free, 3 );
+    PAUSE
+    ListInsert( &chain.spisok, &chain.free, 1, &to_insert_5 );
     
-    //====== CHECK ===============
+
+    // // ====== CHECK ===============
     // ListElem a = 0;
     // int b = 0;
     // while(1)
@@ -27,7 +40,7 @@ int main()
     //     printf(YELLOW "Type element and position you want to insert\n" DELETE_COLOR);
     //     if ( scanf("%lf %d", &a, &b) == 2 )
     //     {
-    //         ListInsert( &spisok, b, &a );
+    //         ListInsert( &chain.spisok, &chain.free, b, &a );
     //         printf(GREEN "ELEMENT: %lf\n\n" DELETE_COLOR, a);
     //     }
     //     else 
@@ -43,10 +56,12 @@ int main()
     // printf("\n\n3rd from 1st take: %lf  \n3rd from second take: %lf\n\n", a, b);
     //=====================================================================
 
-    WriteAllBonds( &spisok, &graph);
+    ListDump( &chain.spisok, &chain.free );
+
+    WriteAllBonds( &chain.spisok, &graph);
     FinishOutput( &graph );
 
-    ListDtor( &spisok );
+    ListDtor( &chain );
     
     return 0;
 }

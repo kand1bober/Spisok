@@ -1,3 +1,4 @@
+#include <iterator>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -31,16 +32,20 @@ enum Errors
     good_write_bonds,
     bad_write_bonds,
 
-    good_
+    good_free_insert,
+    bad_free_insert,
+    good_free_delete,
+    bad_free_delete,
 };
 
-struct List
+struct Free
 {
-    size_t working_size;
-    size_t free;
+    size_t spisok_size;
+    size_t spisok_capacity;
 
-    ListElem* array;
-    size_t array_size;
+
+    int* array;
+    size_t array_size; 
     size_t array_capacity;
 
     int* next;
@@ -52,14 +57,45 @@ struct List
     size_t prev_capacity;
 };
 
+struct List
+{
+    size_t spisok_size; //размер списка ( эмулированный тип хранения )
+    size_t spisok_capacity;
 
-enum Errors ListCtor( struct List* list );
-enum Errors ListDtor( struct List* list );
+
+    ListElem* array;
+    size_t array_size;  //количество заполненных ячеек реального массива
+    size_t array_capacity;
+
+    int* next;
+    size_t next_size;
+    size_t next_capacity;
+
+    int* prev;
+    size_t prev_size;
+    size_t prev_capacity;
+};
+
+struct Data
+{
+    List spisok;
+    Free free;
+};
+
+//========================================
+enum Errors ListCtor( struct Data* list );
+enum Errors ListDtor( struct Data* data );
+void ListDump( struct List* list, struct Free* free );
+enum Errors ListInsert( struct List* list, struct Free* free, size_t pivot, ListElem* elem) ;
+enum Errors ListDelete( struct List* list, struct Free* free, size_t pivot );
 enum Errors ListTakeHead( struct List* list, size_t number, ListElem* elem );
 enum Errors ListTakeTale( struct List* list, size_t number, ListElem* elem );
-enum Errors ListInsert( struct List* list, size_t pivot, ListElem* elem );
-enum Errors ListDelete( struct List* list, size_t pivot );
-void ListDump( struct List* list );
+//=======================================
+
+//=======================================
+enum Errors FreeInsert( struct List* list, struct Free* free, int ip );
+enum Errors FreeDelete( struct List* list, struct Free* free, int* ip );
+//=======================================
 
 //============ UTILITIES ===========
 char* GetFilePath( char* filepath, const char* filename );

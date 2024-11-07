@@ -6,8 +6,10 @@
 
 #ifdef DEBUG
     #define ON_DEBUG( expr ) expr
+    #define PAUSE getchar();
 #else
     #define ON_DEBUG( expr )
+    #define PAUSE
 #endif
 
 #ifdef RELIZ
@@ -15,6 +17,7 @@
 #else
     #define ON_RELIZ( expr )
 #endif
+
 
 
 #endif
