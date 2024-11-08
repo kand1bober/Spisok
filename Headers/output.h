@@ -30,6 +30,7 @@ struct File_graph
 
 void StartOutput( struct File_graph* file );
 void FinishOutput( struct File_graph* file );
-enum Errors WriteAllBonds( struct List* list, struct File_graph* file );
+enum Errors WritePrimaryNodes( struct List* list, struct File_graph* file );
+enum Errors WriteSecondaryNodes( struct List* list, struct File_graph* file );
 
 #endif

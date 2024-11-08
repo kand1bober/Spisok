@@ -29,8 +29,8 @@ enum Errors
     good_take,
     bad_take,
 
-    good_write_bonds,
-    bad_write_bonds,
+    good_write_nodes,
+    bad_write_nodes,
 
     good_free_insert,
     bad_free_insert,

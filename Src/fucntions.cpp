@@ -20,7 +20,7 @@ enum Errors ListCtor( struct Data* data )
     data->spisok.spisok_size = data->spisok.array_size;
 
     *(data->spisok.next) = 1;
-    *(data->spisok.prev) = 1;
+    *(data->spisok.prev) = 0;
 
     // //=============NEXTS=======================
     // for(size_t i = 0; i < data->spisok.next_capacity - 1; i++)
@@ -109,6 +109,8 @@ enum Errors ListDtor( struct Data* data )
 void ListDump( struct List* list, struct Free* free )
 {     
     printf(GREEN "====== Begin of ListDump ======\n" DELETE_COLOR);
+
+    printf("list::\nspisok_size: %lu, array_size: %lu, next_size: %lu, prev_size: %lu\n", list->spisok_size, list->array_size, list->next_size, list->prev_size); 
     printf(SINIY "\n[i]  Number Dump     Next    Prev     [i]\n" DELETE_COLOR);
     for(size_t i = 0 ; i < list->array_capacity; i++)
     {
@@ -117,6 +119,8 @@ void ListDump( struct List* list, struct Free* free )
     }
     printf("\n\n");
 
+
+    printf("free:\nspisok_size: %lu, array_size: %lu, next_size: %lu, prev_size: %lu\n", free->spisok_size, free->array_size, free->next_size, free->prev_size); 
     printf(SINIY "\n[i]  Free  Dump      Next    Prev     [i]\n" DELETE_COLOR);
     for(size_t i = 0 ; i < free->array_capacity; i++)
     {
@@ -167,46 +171,35 @@ enum Errors ListInsert( struct List* list, struct Free* free, size_t pivot, List
 
     *(list->next + next_target) = free_elem; 
     if( pivot_next_target != (size_t)free_elem )
+    {
         *(list->next + free_elem) = pivot_next_target;
+    }
         PAUSE
     //============================================================
 
         ON_DEBUG( ListDump(list, free); )
-
+/*
     //==================PREVS=====================================
     size_t prev_target = 0;
-    for(size_t i = 0; i < (list->spisok_size - pivot ); i++)
+    for(size_t i = 0; i < (list->spisok_size - pivot + 1); i++)
     {
         prev_target = *(list->prev + prev_target);
             ON_DEBUG( printf(SINIY "prev_target: %lu\n" DELETE_COLOR, prev_target); )
             PAUSE
     }
 
-    size_t pivot_prev_target = *(list->prev + prev_target);
+    if( prev_target != pivot )
+    {
+        size_t pivot_prev_target = *(list->prev + prev_target);
 
-        ON_DEBUG( printf(RED "pivot_prev_tatrget: %lu\n" DELETE_COLOR, pivot_prev_target); )
+            ON_DEBUG( printf(RED "pivot_prev_tatrget: %lu\n" DELETE_COLOR, pivot_prev_target); )
 
-    *(list->prev + pivot_prev_target) = list->prev_size;  
-    *(list->prev + list->prev_size) = prev_target;
+        *(list->prev + prev_target) = pivot_prev_target;
+        *(list->prev + pivot_prev_target) = *(list->prev + *(list->prev + pivot_prev_target) );  
+    }
     list->prev_size++;
     //============================================================
-
-    // //================MAKING LIST CYCLED==========================
-    // int last_target = 0;
-    // for(size_t i = 0; i < list->spisok_size - 1; i++)
-    // {
-    //     last_target = list->next[last_target];
-    // }
-    // list->next[last_target] = list->next[0];
-    
-    // last_target = 0;
-    // for(size_t i = 0; i < 1; i++)
-    // {
-    //     last_target = list->prev[last_target];
-    // }
-    // list->prev[0] = last_target;
-    // //============================================================
-
+*/
         ON_DEBUG( ListDump(list, free); )
 
         ON_DEBUG( printf(GREEN "=== END OF INSERT ===\n" DELETE_COLOR); )
@@ -252,7 +245,7 @@ enum Errors ListDelete( struct List* list, struct Free* free, size_t pivot )
 
         ON_DEBUG( ListDump(list, free); )
     //================================================================
-
+/*
     //========================== PREV ================================
     size_t prev_target = 0;
     for(size_t i = 0; i < (list->spisok_size - pivot ); i++)
@@ -274,7 +267,7 @@ enum Errors ListDelete( struct List* list, struct Free* free, size_t pivot )
 
     ON_DEBUG( ListDump(list, free); )
     //================================================================
-
+*/
         ON_DEBUG( printf(RED "=== END OF DELETE ===\n" DELETE_COLOR); )
 
     return good_delete;                            
@@ -344,7 +337,7 @@ enum Errors FreeInsert( struct List* list, struct Free* free, int ip )
 {
         PAUSE
         ON_DEBUG( printf(YELLOW "===== Start of FreeInsert =====\n" DELETE_COLOR); )
-        ON_DEBUG( printf("spisok_size: %lu, array_size: %lu, next_size: %lu, prev_size: %lu\n", free->spisok_size, free->array_size, free->next_size, free->prev_size); )
+        // ON_DEBUG( printf("spisok_size: %lu, array_size: %lu, next_size: %lu, prev_size: %lu\n", free->spisok_size, free->array_size, free->next_size, free->prev_size); )
 
     free->spisok_size++; //логический
     free->array_size++; //хуй знает какой
@@ -362,6 +355,7 @@ enum Errors FreeInsert( struct List* list, struct Free* free, int ip )
     free->prev_size++;//логический
 
         ON_DEBUG( printf(YELLOW "===== End of FreeInsert =====\n" DELETE_COLOR); )
+        ON_DEBUG( ListDump(list, free); )
         PAUSE
 
     return good_free_insert;

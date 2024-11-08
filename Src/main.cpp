@@ -58,7 +58,8 @@ int main()
 
     ListDump( &chain.spisok, &chain.free );
 
-    WriteAllBonds( &chain.spisok, &graph);
+    WritePrimaryNodes( &chain.spisok, &graph );
+    WriteSecondaryNodes( &chain.spisok, &graph );
     FinishOutput( &graph );
 
     ListDtor( &chain );

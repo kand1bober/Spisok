@@ -6,7 +6,7 @@
 
 #ifdef DEBUG
     #define ON_DEBUG( expr ) expr
-    #define PAUSE getchar();
+    #define PAUSE //getchar();
 #else
     #define ON_DEBUG( expr )
     #define PAUSE
